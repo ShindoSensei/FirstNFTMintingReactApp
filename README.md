@@ -1,11 +1,23 @@
-# buildspace Mint Your Own NFT Collection
+# NFT Quotes Minting Frontend app
+Mint a quote on the Rinkeby Test Blockchain forever
 
-### **Welcome 👋**
-To get started with this course, clone this repo and follow these commands:
+# Requirements
+1) Metamask wallet chrome extension
+2) Rinkeby ETH (https://www.geeksforgeeks.org/ethereum-blockchain-getting-free-test-ethers-for-rinkeby-test-network/)
+
+# To get started
 
 1. Run `npm install` at the root of your directory
-2. Run `npm run start` to start the project
+2. Run `npm start` to start the project
 3. Start coding!
 
-### **Questions?**
-Have some questions make sure you head over to your [buildspace Dashboard](https://app.buildspace.so/courses/CO961ddb5f-f428-4608-9949-a9a2f461eb3f) and link your Discord account so you can get access to helpful channels and your instructor!
+# Note 
+
+Whenever solidity contract code is updated, the following 3 steps need to be taken,
+
+1) On the separate Solidity app, redeploy with npx hardhat run scripts/deploy.js --network rinkeby → So that the new smart contract logic is pushed to the blockchain 
+
+2) Update contract address
+
+3) Copy the latest ABI file from solidity app (artifacts folder) to this web app (src/utils/MyEpicNFT.json)
+

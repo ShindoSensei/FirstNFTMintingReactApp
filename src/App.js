@@ -153,9 +153,9 @@ const App = () => {
     <div className="App">
       <div className="container">
         <div className="header-container">
-          <p className="header gradient-text">My NFT Collection</p>
+          <p className="header gradient-text">NFT Quotes</p>
           <p className="sub-text">
-            Each unique. Each beautiful. Discover your NFT today.
+            Immortalise your creativity
           </p>
           {currentAccount === "" ? renderNotConnectedContainer() : renderMintUI()}
         </div>
