@@ -12,6 +12,8 @@ const App = () => {
 
   //State variable we use to store our user's public wallet. Don't forget to import useState.
   const [ currentAccount, setCurrentAccount ] = useState("");
+  const [ quote, setQuote ] = useState("");
+  const [ minting, setMinting ] = useState(false);
   //Make sure this is async
   const checkIfWalletIsConnected = async () => {
     //Check to see if we have access to window.ethereum (https://docs.metamask.io/guide/ethereum-provider.html#table-of-contents)
@@ -149,6 +151,19 @@ const App = () => {
     </button>
   )
 
+  const handleSubmit = event => {
+    event.preventDefault();
+    setMinting(true);
+    // Do some logic here with spinning animation and once minting is done, setMinting(false)
+    console.log("Submitted form")
+  }
+
+  const handleChange = event => {
+    setQuote(event.target.value)
+    console.log("Capturing Quote")
+    console.log(event.target.value)
+  }
+
   return (
     <div className="App">
       <div className="container">
@@ -157,6 +172,13 @@ const App = () => {
           <p className="sub-text">
             Immortalise your creativity
           </p>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Quote:
+              <input type="text" onChange={handleChange} />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
           {currentAccount === "" ? renderNotConnectedContainer() : renderMintUI()}
         </div>
         
