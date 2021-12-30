@@ -1,7 +1,8 @@
 import './styles/App.css';
 import React, { useEffect, useState } from "react";
 import { ethers } from 'ethers';
-import myEpicNft from './utils/MyEpicNFT.json'; //This is the ABI file that's copy and pasted from the other NFTContract project's artifact directory. This ABI file helps this frontend app to talk to the contract.
+import myEpicNft from './utils/MyEpicNFT.json'; //This is the ABI file that's copy and pasted from the other NFTContract project's artifact directory. This ABI file helps this frontend app to talk to the contract.;
+
 require('dotenv').config();
 // Constants
 const CONTRACT_ADDRESS = process.env.REACT_APP_RINKEBY_CONTRACT_ADDRESS; //Deployed Rinkeby contract address. 
@@ -13,6 +14,7 @@ const App = () => {
   //State variable we use to store our user's public wallet. Don't forget to import useState.
   const [ currentAccount, setCurrentAccount ] = useState("");
   const [ quote, setQuote ] = useState("");
+  const [ shouldDisplayMinting, setShouldDisplayMinting ] = useState(false);
   const [ minting, setMinting ] = useState(false);
   //Make sure this is async
   const checkIfWalletIsConnected = async () => {
@@ -43,6 +45,10 @@ const App = () => {
   }
 
   const connectWallet = async() => {
+    if(quote.length === 0){
+      alert("Key in a quote!");
+      return;
+    };
     try {
       const { ethereum } = window;
 
@@ -80,6 +86,8 @@ const App = () => {
         //This event only happens after the actual Minting function in the contract is called and completed. We only emit the NFT minted event here because even though this MyEpicNFT contract may be mined, it does not necessarily mean that the NFT was actually minted (because function makeAnEpicNFT needs to have properly been executed for minting to be complete)
         connectedContract.on("NewEpicNFTMinted", (from, tokenId) => {
           console.log(from, tokenId.toNumber())
+          setMinting(false);
+          setShouldDisplayMinting(false);
           alert(`Hey there! We've minted your NFT and sent it to your wallet. It may be blank right now. It can take a max of 10 min to show up on OpenSea. Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId.toNumber()}`)
         });
 
@@ -94,11 +102,16 @@ const App = () => {
   }
 
   const askContractToMintNft = async () => {
-
+    if(quote.length === 0){
+      alert("Key in a quote!");
+      setMinting(false);
+      return;
+    };
     try {
       const { ethereum } = window;
 
       if(ethereum) {
+        setMinting(true);
         //Now we make sure user is on the correct network (i.e Rinkebey) by checking the chain ID. Note that ChainID is essential to differentiate between the old ETC (before 2016 fork) and new ETH see: https://ethereum.stackexchange.com/questions/37533/what-is-a-chainid-in-ethereum-how-is-it-different-than-networkid-and-how-is-it
         let chainId = await ethereum.request({ method: 'eth_chainId' });
         console.log("Connected to chain " + chainId);
@@ -108,6 +121,7 @@ const App = () => {
         if (chainId !== rinkebyChainId) {
           //Prevent user from minting app if they are not connected properly to Rinkeby test network.
           alert("You are not connected to the Rinkeby Test Network! Change the network settings on your metamask wallet");
+          setMinting(false)
           return;
         }
         const provider = new ethers.providers.Web3Provider(ethereum); //ethers is a library that helps our frontend talk to our contract. 
@@ -122,8 +136,8 @@ const App = () => {
         let nftTxn = await connectedContract.makeAnEpicNFT();
 
         console.log("Mining...please wait.")
+        setShouldDisplayMinting(true);
         await nftTxn.wait();
-
         console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${nftTxn.hash}`);
       }else{
         console.log("Ethereum object doesn't exist!");
@@ -140,27 +154,26 @@ const App = () => {
 
   // Render Methods
   const renderNotConnectedContainer = () => (
-    <button onClick={connectWallet} className="cta-button connect-wallet-button">
+    <button onClick={connectWallet} disabled={minting} className="cta-button connect-wallet-button">
       Connect to Wallet
     </button>
   );
 
   const renderMintUI = () => (
-    <button onClick={askContractToMintNft} className="cta-button connect-wallet-button">
+    <button onClick={askContractToMintNft} disabled={minting} className="cta-button connect-wallet-button">
       Mint NFT
-    </button>
+    </button>    
   )
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    setMinting(true);
-    // Do some logic here with spinning animation and once minting is done, setMinting(false)
-    console.log("Submitted form")
-  }
+  // const handleSubmit = event => {
+  //   event.preventDefault();
+  //   setMinting(true);
+  //   // Do some logic here with spinning animation and once minting is done, setMinting(false)
+  //   console.log("Submitted form")
+  // }
 
   const handleChange = event => {
     setQuote(event.target.value)
-    console.log("Capturing Quote")
     console.log(event.target.value)
   }
 
@@ -172,14 +185,15 @@ const App = () => {
           <p className="sub-text">
             Immortalise your creativity
           </p>
-          <form onSubmit={handleSubmit}>
-            <label>
-              Quote:
-              <input type="text" onChange={handleChange} />
-            </label>
-            <input type="submit" value="Submit" />
-          </form>
-          {currentAccount === "" ? renderNotConnectedContainer() : renderMintUI()}
+          <div className="input-container">
+            <input disabled={minting} placeholder="Key in quote" type="text" style={{height: "30px", width: "250px"}} onChange={handleChange} autoFocus maxLength={50} value={quote}/>
+          </div>
+          <div>
+            
+            {minting === false && currentAccount === "" ? renderNotConnectedContainer() : renderMintUI()}
+            {shouldDisplayMinting ? <p className="minting-text"> Minting...Please wait a few secs / mins for a pop-up alert </p>     
+              : null}
+          </div>
         </div>
         
       </div>

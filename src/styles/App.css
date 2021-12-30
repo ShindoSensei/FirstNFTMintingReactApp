@@ -17,6 +17,26 @@
   padding-top: 30px;
 }
 
+.input-container {
+  margin-bottom: 20px;
+}
+
+::-webkit-input-placeholder {
+  text-align: center;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+  text-align: center;  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+  text-align: center;  
+}
+
+:-ms-input-placeholder {  
+  text-align: center; 
+}
+
 .header {
   margin: 0;
   font-size: 50px;
@@ -25,6 +45,11 @@
 
 .sub-text {
   font-size: 25px;
+  color: white;
+}
+
+.minting-text {
+  font-size: 15px;
   color: white;
 }
 
