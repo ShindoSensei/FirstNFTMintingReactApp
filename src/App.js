@@ -144,6 +144,8 @@ const App = () => {
       }
     }catch(err){
       console.log(err)
+      setShouldDisplayMinting(false);
+      setMinting(false);
     }
   }
 
