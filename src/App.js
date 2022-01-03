@@ -133,7 +133,7 @@ const App = () => {
         //abi stands for application binary interface.
 
         console.log("Going to pop wallet now to pay gas...")
-        let nftTxn = await connectedContract.makeAnEpicNFT();
+        let nftTxn = await connectedContract.makeAnEpicNFT(quote);
 
         console.log("Mining...please wait.")
         setShouldDisplayMinting(true);
